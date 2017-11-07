@@ -8,17 +8,27 @@
     <packaging>jar</packaging>
 
     <name>nqcx-tools</name>
-    <url>http://maven.apache.org</url>
+    <url>http://tools.nqcx.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>3.2.6.RELEASE</spring.version>
         <slf4j.version>1.7.5</slf4j.version>
-        <!--<nqcx.commons.version>2.0.0-SNAPSHOT</nqcx.commons.version>-->
+        <nqcx.commons.version>2.0.1-SNAPSHOT</nqcx.commons.version>
     </properties>
 
     <dependencies>
         <!-- ########## 2nd party library ########## -->
+        <dependency>
+            <groupId>org.nqcx.commons</groupId>
+            <artifactId>nqcx-commons-lang</artifactId>
+            <version>${nqcx.commons.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.nqcx.commons</groupId>
+            <artifactId>nqcx-commons-util</artifactId>
+            <version>${nqcx.commons.version}</version>
+        </dependency>
 
         <!-- ########## 3rd party library ########## -->
         <dependency>
@@ -70,7 +80,7 @@
             <artifactId>spring-beans</artifactId>
             <version>${spring.version}</version>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>${spring.version}</version>
