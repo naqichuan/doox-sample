@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
+    <appender name="myConsole" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{dd HH:mm:ss,SSS\} %-5p] [%t] %c{2\} - %m%n"/>
+        </layout>
+        <!--过滤器设置输出的级别 -->
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="levelMin" value="${log.worker.level.min}"/>
+            <param name="levelMax" value="${log.worker.level.max}"/>
+            <param name="AcceptOnMatch" value="true"/>
+        </filter>
+    </appender>
+
+    <appender name="sqlFile" class="org.apache.log4j.RollingFileAppender">
+        <!-- 设置日志输出文件名 -->
+        <param name="File" value="${log.dir}/${log.file.name}-sql.log"/>
+        <param name="Append" value="true"/>
+        <param name="MaxBackupIndex" value="1"/>
+        <param name="MaxFileSize" value="100MB"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss}] %c{3\} - %m%n"/>
+        </layout>
+        <!--过滤器设置输出的级别 -->
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="levelMin" value="${log.sql.level.min}"/>
+            <param name="levelMax" value="${log.sql.level.max}"/>
+        </filter>
+    </appender>
+
+    <appender name="myFile" class="org.apache.log4j.RollingFileAppender">
+        <!--设置日志输出文件名 -->
+        <param name="File" value="${log.dir}/${log.file.name}.log"/>
+        <param name="Append" value="true"/>
+        <param name="MaxBackupIndex" value="9"/>
+        <param name="MaxFileSize" value="100MB"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{dd HH:mm:ss,SSS\} %-5p] [%t] %c{2\} - %m%n"/>
+        </layout>
+        <!--过滤器设置输出的级别 -->
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="levelMin" value="${log.worker.level.min}"/>
+            <param name="levelMax" value="${log.worker.level.max}"/>
+        </filter>
+    </appender>
+
+    <!-- sql log -->
+    <category name="org.nqcx.worker.mapper" additivity="false">
+        <priority value="${log.sql.level.min}"/>
+        <appender-ref ref="sqlFile"/>
+    </category>
+
+    <!-- 根logger的设置 -->
+    <root>
+        <level value="${log.root.level}"/>
+        <appender-ref ref="myConsole"/>
+        <appender-ref ref="myFile"/>
+    </root>
+</log4j:configuration>
