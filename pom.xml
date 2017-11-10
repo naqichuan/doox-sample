@@ -37,6 +37,12 @@
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
         </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.5</version>
+        </dependency>
+
 
         <!-- log -->
         <dependency>
@@ -112,6 +118,12 @@
             <groupId>jmagick</groupId>
             <artifactId>jmagick</artifactId>
             <version>6.6.9</version>
+        </dependency>
+        <!-- img -->
+        <dependency>
+            <groupId>net.coobird</groupId>
+            <artifactId>thumbnailator</artifactId>
+            <version>0.4.8</version>
         </dependency>
 
         <!-- httpclient -->

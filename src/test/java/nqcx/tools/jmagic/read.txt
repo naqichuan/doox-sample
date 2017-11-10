@@ -1,0 +1,2 @@
+CompressionType:http://web.mit.edu/GRAPHICS/share/ImageMagick/www/api/types/Enumerations.html#CompressionType
+Thumbnailator:https://www.cnblogs.com/miskis/p/5500822.html
