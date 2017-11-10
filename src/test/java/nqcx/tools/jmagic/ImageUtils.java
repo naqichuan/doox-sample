@@ -65,7 +65,7 @@ public class ImageUtils {
                     destHeight = width / sourceWidth * sourceHeight;
                 }
             }
-            destImage = sourceImage.scaleImage(destWidth.intValue(), destHeight.intValue());
+            destImage = sourceImage.zoomImage(destWidth.intValue(), destHeight.intValue());
             destImage.setImageFormat("png");
             // .sharpenImage(SHARPEN_IMG_RADUIS, SHARPEN_IMG_SIGMA);
             //水平分辨率DPI
