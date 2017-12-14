@@ -11,14 +11,12 @@ import org.slf4j.LoggerFactory;
 
 public class ZooKeeperClient {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger("ZooKeeperClient");
+    private final static Logger LOGGER = LoggerFactory.getLogger(ZooKeeperClient.class);
 
     public static void main(String[] args) {
 
-        for (int i = 0; i < 2000000; i++) {
+        for (int i = 0; i < 50; i++) {
             LOGGER.info("id: {}, sdp2lk;dkjl;afd;kllad;kljadspiowqpoidspljkasdpoijdsapjkladspkojadspkjasdppjadsf", i);
-            LOGGER.warn("id: {}, sdp2lk;dkjl;afd;kllad;kljadspiowqpoidspljkasdpoijdsapjkladspkojadspkjasdppjadsf", i);
-            LOGGER.error("id: {}, sdp2lk;dkjl;afd;kllad;kljadspiowqpoidspljkasdpoijdsapjkladspkojadspkjasdppjadsf", i);
         }
     }
 }
