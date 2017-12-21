@@ -13,6 +13,7 @@
             </Filters>
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %c{2}:%L - %msg%n"/>
             <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
                 <SizeBasedTriggeringPolicy size="100 MB"/>
             </Policies>
             <DefaultRolloverStrategy max="20"/>
@@ -25,6 +26,7 @@
             </Filters>
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %c{2}:%L - %msg%n"/>
             <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
                 <SizeBasedTriggeringPolicy size="100 MB"/>
             </Policies>
             <DefaultRolloverStrategy max="20"/>
@@ -34,6 +36,7 @@
             <ThresholdFilter level="ERROR"/>
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %c{2}:%L - %msg%n"/>
             <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
                 <SizeBasedTriggeringPolicy size="100 MB"/>
             </Policies>
             <DefaultRolloverStrategy max="20"/>
