@@ -74,7 +74,7 @@ public class LoadExample {
 
       sched.scheduleJob(job, trigger);
       if (count % 25 == 0) {
-        log.info("...scheduled " + count + " jobs");
+        log.info("...scheduled " + count + "org/quartz/jobs");
       }
     }
 
