@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Configuration status="WARN">
+    <Properties>
+        <Property name="LogDir">${log.dir}</Property>
+        <Property name="LogRootLevel">${log.root.level}</Property>
+        <Property name="LogNameSql">java.sql</Property>
+    </Properties>
     <Appenders>
+        <!-- 输出控制台 -->
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %c{2}:%L - %msg%n"/>
         </Console>
 
-        <RollingFile name="FileInfo" fileName="${log.dir}/${log.app.name}/info.log"
-                     filePattern="${log.dir}/${log.app.name}/$${date:yyyy-MM}/info-%d{yyyy-MM-dd}-%i.log">
+        <!-- 分别将 INFO, WARN, ERROR 级别的日志输出到单独的文件里 -->
+        <RollingFile name="FileInfo" fileName="${LogDir}/info.log"
+                     filePattern="${LogDir}/$${date:yyyy-MM}/info-%d{yyyy-MM-dd}-%i.log">
             <Filters>
                 <ThresholdFilter level="INFO"/>
                 <ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>
@@ -16,10 +23,11 @@
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
                 <SizeBasedTriggeringPolicy size="100 MB"/>
             </Policies>
+            <!-- DefaultRolloverStrategy属性如不设置，则默认为最多同一文件夹下7个文件，这里设置了20 -->
             <DefaultRolloverStrategy max="20"/>
         </RollingFile>
-        <RollingFile name="FileWarn" fileName="${log.dir}/${log.app.name}/warn.log"
-                     filePattern="${log.dir}/${log.app.name}/$${date:yyyy-MM}/warn-%d{yyyy-MM-dd}-%i.log">
+        <RollingFile name="FileWarn" fileName="${LogDir}/warn.log"
+                     filePattern="${LogDir}/$${date:yyyy-MM}/warn-%d{yyyy-MM-dd}-%i.log">
             <Filters>
                 <ThresholdFilter level="WARN"/>
                 <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="NEUTRAL"/>
@@ -29,22 +37,117 @@
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
                 <SizeBasedTriggeringPolicy size="100 MB"/>
             </Policies>
+            <!-- DefaultRolloverStrategy属性如不设置，则默认为最多同一文件夹下7个文件，这里设置了20 -->
             <DefaultRolloverStrategy max="20"/>
         </RollingFile>
-        <RollingFile name="FileError" fileName="${log.dir}/${log.app.name}/error.log"
-                     filePattern="${log.dir}/${log.app.name}/$${date:yyyy-MM}/error-%d{yyyy-MM-dd}-%i.log">
+        <RollingFile name="FileError" fileName="${LogDir}/error.log"
+                     filePattern="${LogDir}/$${date:yyyy-MM}/error-%d{yyyy-MM-dd}-%i.log">
             <ThresholdFilter level="ERROR"/>
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %c{2}:%L - %msg%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
                 <SizeBasedTriggeringPolicy size="100 MB"/>
             </Policies>
+            <!-- DefaultRolloverStrategy属性如不设置，则默认为最多同一文件夹下7个文件，这里设置了20 -->
             <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+
+        <!-- 缓存日志文件 cache -->
+        <RollingFile name="FileCache" fileName="${LogDir}/cache.log"
+                     filePattern="${LogDir}/$${date:yyyy-MM}/cache-%d{yyyy-MM-dd}-%i.log">
+            <ThresholdFilter level="INFO"/>
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %c{2}:%L - %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <!-- DefaultRolloverStrategy属性如不设置，则默认为最多同一文件夹下7个文件，这里设置了3 -->
+            <DefaultRolloverStrategy max="3"/>
+        </RollingFile>
+
+        <!-- 消息队列日志文件 queue -->
+        <RollingFile name="FileQueue" fileName="${LogDir}/queue.log"
+                     filePattern="${LogDir}/$${date:yyyy-MM}/queue-%d{yyyy-MM-dd}-%i.log">
+            <ThresholdFilter level="INFO"/>
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %c{2}:%L - %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <!-- DefaultRolloverStrategy属性如不设置，则默认为最多同一文件夹下7个文件，这里设置了3 -->
+            <DefaultRolloverStrategy max="3"/>
+        </RollingFile>
+
+        <!-- SQL 日志文件 sql -->
+        <RollingFile name="FileSql" fileName="${LogDir}/sql.log"
+                     filePattern="${LogDir}/$${date:yyyy-MM}/sql-%d{yyyy-MM-dd}-%i.log">
+            <ThresholdFilter level="DEBUG"/>
+            <PatternLayout pattern="%d{MM-dd HH:mm:ss.SSS} %c{2} - %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <!-- DefaultRolloverStrategy属性如不设置，则默认为最多同一文件夹下7个文件，这里设置了3 -->
+            <DefaultRolloverStrategy max="3"/>
+        </RollingFile>
+
+        <!-- 访问日志文件 access -->
+        <RollingFile name="FileAccess" fileName="${LogDir}/access.log"
+                     filePattern="${LogDir}/$${date:yyyy-MM}/access-%d{yyyy-MM-dd}-%i.log">
+            <ThresholdFilter level="INFO"/>
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS}, %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <!-- DefaultRolloverStrategy属性如不设置，则默认为最多同一文件夹下7个文件，这里设置了100 -->
+            <DefaultRolloverStrategy max="100"/>
+        </RollingFile>
+
+        <!--  api & open api access log -->
+        <RollingFile name="FileApiAccess" fileName="${LogDir}/api-access.log"
+                     filePattern="${LogDir}/$${date:yyyy-MM}/api-access-%d{yyyy-MM-dd}-%i.log">
+            <ThresholdFilter level="INFO"/>
+            <PatternLayout pattern="-- %d{yyyy-MM-dd HH:mm:ss.SSS}\n%msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <!-- DefaultRolloverStrategy属性如不设置，则默认为最多同一文件夹下7个文件，这里设置了100 -->
+            <DefaultRolloverStrategy max="100"/>
         </RollingFile>
     </Appenders>
 
     <Loggers>
-        <Root level="${log.root.level}">
+        <!-- 缓存日志 -->
+        <Logger name="_NQCX_LOGGER_CACHE" level="INFO" additivity="false">
+            <appender-ref ref="FileCache"/>
+        </Logger>
+        <!-- 消息队列日志 -->
+        <Logger name="_NQCX_LOGGER_MQ" level="INFO" additivity="false">
+            <appender-ref ref="FileQueue"/>
+        </Logger>
+        <!-- SQL 日志 -->
+        <Logger name="${LogNameSql}" level="DEBUG" additivity="false">
+            <appender-ref ref="FileSql"/>
+        </Logger>
+
+        <!-- 访问日志 -->
+        <AsyncLogger name="_NQCX_LOGGER_ACCESS" level="INFO" additivity="false" includeLocation="true">
+            <AppenderRef ref="KafkaAppender"/>
+            <AppenderRef ref="FileAccess"/>
+        </AsyncLogger>
+        <!--  api access log -->
+        <Logger name="API_ACCESS_LOGGER" level="INFO" additivity="false">
+            <appender-ref ref="FileApiAccess"/>
+        </Logger>
+        <!--  open api access log -->
+        <Logger name="OPENAPI_ACCESS_LOGGER" level="INFO" additivity="false">
+            <appender-ref ref="FileApiAccess"/>
+        </Logger>
+
+        <!-- root -->
+        <Root level="${LogRootLevel}">
             <AppenderRef ref="FileInfo"/>
             <AppenderRef ref="FileWarn"/>
             <AppenderRef ref="FileError"/>

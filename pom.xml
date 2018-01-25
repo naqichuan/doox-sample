@@ -53,6 +53,11 @@
 
         <!-- log -->
         <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
@@ -71,6 +76,21 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
             <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-jcl</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-jul</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
+            <version>3.3.7</version>
         </dependency>
 
         <!--<dependency>-->
@@ -370,11 +390,10 @@
             <version>5.1.23</version>
         </dependency>
         <dependency>
-            <groupId>c3p0</groupId>
+            <groupId>com.mchange</groupId>
             <artifactId>c3p0</artifactId>
-            <version>0.9.1.2</version>
+            <version>0.9.5.2</version>
         </dependency>
-
         <!-- jms -->
         <dependency>
             <groupId>javax.jms</groupId>
@@ -492,11 +511,8 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <log.dir>/var/log</log.dir>
-                <log.app.name>worker</log.app.name>
+                <log.dir>/var/log/worker</log.dir>
                 <log.root.level>INFO</log.root.level>
-                <!--<log.sql.level.min>DEBUG</log.sql.level.min>-->
-                <!--<log.sql.level.max>DEBUG</log.sql.level.max>-->
 
                 <zip.demon.test>This is a development test property</zip.demon.test>
                 <!-- Add your development property here -->

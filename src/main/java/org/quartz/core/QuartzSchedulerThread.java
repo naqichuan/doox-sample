@@ -318,6 +318,8 @@ public class QuartzSchedulerThread extends Thread {
                             }
                             now = System.currentTimeMillis();
                             timeUntilTrigger = triggerTime - now;
+
+                            getLog().info(String.valueOf(timeUntilTrigger));
                         }
 
                         // this happens if releaseIfScheduleChangedSignificantly decided to release triggers
