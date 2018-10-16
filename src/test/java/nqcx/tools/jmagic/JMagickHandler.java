@@ -157,6 +157,5 @@
 //    @Override
 //    public void cropImage(String src, int width, int height, int point,
 //                          int point2, String dst) throws Exception {
-//        // TODO Auto-generated method stub
 //    }
 //}

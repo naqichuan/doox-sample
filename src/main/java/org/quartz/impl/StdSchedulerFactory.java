@@ -1383,6 +1383,13 @@ public class StdSchedulerFactory implements SchedulerFactory {
         }
     }
 
+    /**
+     * 子类可以进行 resources 扩展和修改 ????
+     *
+     * @param rsrcs rsrcs
+     * @param qs    qs
+     * @return Scheduler
+     */
     protected Scheduler instantiate(QuartzSchedulerResources rsrcs, QuartzScheduler qs) {
 
         Scheduler scheduler = new StdScheduler(qs);
