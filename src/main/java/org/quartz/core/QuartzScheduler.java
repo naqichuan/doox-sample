@@ -75,6 +75,7 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
     private static String VERSION_ITERATION = "UNKNOWN";
 
     static {
+        // 加载版本信息
         Properties props = new Properties();
         InputStream is = null;
         try {
@@ -125,25 +126,27 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
 
     private SchedulerContext context = new SchedulerContext();
 
+    // 全局监听
     private ListenerManager listenerManager = new ListenerManagerImpl();
 
-    private HashMap<String, JobListener> internalJobListeners = new HashMap<String, JobListener>(10);
-
-    private HashMap<String, TriggerListener> internalTriggerListeners = new HashMap<String, TriggerListener>(10);
-
-    private ArrayList<SchedulerListener> internalSchedulerListeners = new ArrayList<SchedulerListener>(10);
+    // 内部监听
+    private HashMap<String, JobListener> internalJobListeners = new HashMap<>(10);
+    private HashMap<String, TriggerListener> internalTriggerListeners = new HashMap<>(10);
+    private ArrayList<SchedulerListener> internalSchedulerListeners = new ArrayList<>(10);
 
     private JobFactory jobFactory = new PropertySettingJobFactory();
 
-    ExecutingJobsManager jobMgr = null;
+    private ExecutingJobsManager jobMgr;
 
-    ErrorLogger errLogger = null;
+    private ErrorLogger errLogger;
 
+    // 信号
     private SchedulerSignaler signaler;
 
     private Random random = new Random();
 
-    private ArrayList<Object> holdToPreventGC = new ArrayList<Object>(5);
+    // 阻止 GC
+    private ArrayList<Object> holdToPreventGC = new ArrayList<>(5);
 
     private boolean signalOnSchedulingChange = true;
 
@@ -196,11 +199,13 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
             this.schedThread.setIdleWaitTime(idleWaitTime);
         }
 
+        // 管理正在执行的任务（添加、删除、总数），触发任务总数
         jobMgr = new ExecutingJobsManager();
         addInternalJobListener(jobMgr);
         errLogger = new ErrorLogger();
         addInternalSchedulerListener(errLogger);
 
+        // 信号
         signaler = new SchedulerSignalerImpl(this, this.schedThread);
 
         if (shouldRunUpdateCheck())
@@ -2394,6 +2399,7 @@ class ErrorLogger extends SchedulerListenerSupport {
 class ExecutingJobsManager implements JobListener {
     HashMap<String, JobExecutionContext> executingJobs = new HashMap<String, JobExecutionContext>();
 
+    // 任务记数器
     AtomicInteger numJobsFired = new AtomicInteger(0);
 
     ExecutingJobsManager() {

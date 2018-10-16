@@ -583,6 +583,9 @@ public class StdSchedulerFactory implements SchedulerFactory {
         this.cfg = new PropertiesParser(props);
     }
 
+    /**
+     * 实例化 Scheduler
+     */
     private Scheduler instantiate() throws SchedulerException {
         if (cfg == null) {
             initialize();
@@ -592,9 +595,9 @@ public class StdSchedulerFactory implements SchedulerFactory {
             throw initException;
         }
 
-        JobStore js = null;
-        ThreadPool tp = null;
-        QuartzScheduler qs = null;
+        JobStore js;
+        ThreadPool threadPool;
+        QuartzScheduler quartzScheduler = null;
         DBConnectionManager dbMgr = null;
         String instanceIdGeneratorClass = null;
         Properties tProps = null;
@@ -608,7 +611,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
         ThreadExecutor threadExecutor;
 
 
-        SchedulerRepository schedRep = SchedulerRepository.getInstance();
+        SchedulerRepository schedRepository = SchedulerRepository.getInstance();
 
         // Get Scheduler Properties
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -708,9 +711,10 @@ public class StdSchedulerFactory implements SchedulerFactory {
             String uid = (rmiBindName == null) ? QuartzSchedulerResources.getUniqueIdentifier(
                     schedName, schedInstId) : rmiBindName;
 
+            // TODO 实例化 RemoteScheduler
             RemoteScheduler remoteScheduler = new RemoteScheduler(uid, rmiHost, rmiPort);
 
-            schedRep.bind(remoteScheduler);
+            schedRepository.bind(remoteScheduler);
 
             return remoteScheduler;
         }
@@ -741,6 +745,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
 
             RemoteMBeanScheduler jmxScheduler = null;
             try {
+                // TODO 实例化 RemoteMBeanScheduler
                 jmxScheduler = (RemoteMBeanScheduler) loadHelper.loadClass(jmxProxyClass)
                         .newInstance();
             } catch (Exception e) {
@@ -765,7 +770,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
 
             jmxScheduler.initialize();
 
-            schedRep.bind(jmxScheduler);
+            schedRepository.bind(jmxScheduler);
 
             return jmxScheduler;
         }
@@ -825,7 +830,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
         }
 
         try {
-            tp = (ThreadPool) loadHelper.loadClass(tpClass).newInstance();
+            threadPool = (ThreadPool) loadHelper.loadClass(tpClass).newInstance();
         } catch (Exception e) {
             initException = new SchedulerException("ThreadPool class '"
                     + tpClass + "' could not be instantiated.", e);
@@ -833,7 +838,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
         }
         tProps = cfg.getPropertyGroup(PROP_THREAD_POOL_PREFIX, true);
         try {
-            setBeanProps(tp, tProps);
+            setBeanProps(threadPool, tProps);
         } catch (Exception e) {
             initException = new SchedulerException("ThreadPool class '"
                     + tpClass + "' props could not be configured.", e);
@@ -1266,17 +1271,17 @@ public class StdSchedulerFactory implements SchedulerFactory {
                 rsrcs.setRMIBindName(rmiBindName);
             }
 
-            SchedulerDetailsSetter.setDetails(tp, schedName, schedInstId);
+            SchedulerDetailsSetter.setDetails(threadPool, schedName, schedInstId);
 
             rsrcs.setThreadExecutor(threadExecutor);
             threadExecutor.initialize();
 
-            rsrcs.setThreadPool(tp);
-            if (tp instanceof SimpleThreadPool) {
+            rsrcs.setThreadPool(threadPool);
+            if (threadPool instanceof SimpleThreadPool) {
                 if (threadsInheritInitalizersClassLoader)
-                    ((SimpleThreadPool) tp).setThreadsInheritContextClassLoaderOfInitializingThread(threadsInheritInitalizersClassLoader);
+                    ((SimpleThreadPool) threadPool).setThreadsInheritContextClassLoaderOfInitializingThread(threadsInheritInitalizersClassLoader);
             }
-            tp.initialize();
+            threadPool.initialize();
             tpInited = true;
 
             rsrcs.setJobStore(js);
@@ -1286,15 +1291,15 @@ public class StdSchedulerFactory implements SchedulerFactory {
                 rsrcs.addSchedulerPlugin(plugins[i]);
             }
 
-            qs = new QuartzScheduler(rsrcs, idleWaitTime, dbFailureRetry);
+            quartzScheduler = new QuartzScheduler(rsrcs, idleWaitTime, dbFailureRetry);
             qsInited = true;
 
             // Create Scheduler ref...
-            Scheduler scheduler = instantiate(rsrcs, qs);
+            Scheduler scheduler = instantiate(rsrcs, quartzScheduler);
 
             // set job factory if specified
             if (jobFactory != null) {
-                qs.setJobFactory(jobFactory);
+                quartzScheduler.setJobFactory(jobFactory);
             }
 
             // Initialize plugins now that we have a Scheduler instance.
@@ -1302,12 +1307,13 @@ public class StdSchedulerFactory implements SchedulerFactory {
                 plugins[i].initialize(pluginNames[i], scheduler, loadHelper);
             }
 
-            // add listeners
+            // TODO add job listeners
             for (int i = 0; i < jobListeners.length; i++) {
-                qs.getListenerManager().addJobListener(jobListeners[i], EverythingMatcher.allJobs());
+                quartzScheduler.getListenerManager().addJobListener(jobListeners[i], EverythingMatcher.allJobs());
             }
+            // TODO add trigger listeners
             for (int i = 0; i < triggerListeners.length; i++) {
-                qs.getListenerManager().addTriggerListener(triggerListeners[i], EverythingMatcher.allTriggers());
+                quartzScheduler.getListenerManager().addTriggerListener(triggerListeners[i], EverythingMatcher.allTriggers());
             }
 
             // set scheduler context data...
@@ -1320,36 +1326,36 @@ public class StdSchedulerFactory implements SchedulerFactory {
 
             js.setInstanceId(schedInstId);
             js.setInstanceName(schedName);
-            js.setThreadPoolSize(tp.getPoolSize());
-            js.initialize(loadHelper, qs.getSchedulerSignaler());
+            js.setThreadPoolSize(threadPool.getPoolSize());
+            js.initialize(loadHelper, quartzScheduler.getSchedulerSignaler());
 
             jrsf.initialize(scheduler);
 
-            qs.initialize();
+            quartzScheduler.initialize();
 
             getLog().info(
                     "Quartz scheduler '" + scheduler.getSchedulerName()
                             + "' initialized from " + propSrc);
 
-            getLog().info("Quartz scheduler version: " + qs.getVersion());
+            getLog().info("Quartz scheduler version: " + quartzScheduler.getVersion());
 
             // prevents the repository from being garbage collected
-            qs.addNoGCObject(schedRep);
+            quartzScheduler.addNoGCObject(schedRepository);
             // prevents the db manager from being garbage collected
             if (dbMgr != null) {
-                qs.addNoGCObject(dbMgr);
+                quartzScheduler.addNoGCObject(dbMgr);
             }
 
-            schedRep.bind(scheduler);
+            schedRepository.bind(scheduler);
             return scheduler;
         } catch (SchedulerException e) {
-            shutdownFromInstantiateException(tp, qs, tpInited, qsInited);
+            shutdownFromInstantiateException(threadPool, quartzScheduler, tpInited, qsInited);
             throw e;
         } catch (RuntimeException re) {
-            shutdownFromInstantiateException(tp, qs, tpInited, qsInited);
+            shutdownFromInstantiateException(threadPool, quartzScheduler, tpInited, qsInited);
             throw re;
         } catch (Error re) {
-            shutdownFromInstantiateException(tp, qs, tpInited, qsInited);
+            shutdownFromInstantiateException(threadPool, quartzScheduler, tpInited, qsInited);
             throw re;
         }
     }
@@ -1392,6 +1398,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
      */
     protected Scheduler instantiate(QuartzSchedulerResources rsrcs, QuartzScheduler qs) {
 
+        // TODO 实例化 StdScheduler，需要 QuartzScheduler
         Scheduler scheduler = new StdScheduler(qs);
         return scheduler;
     }
