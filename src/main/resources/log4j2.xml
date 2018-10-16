@@ -3,7 +3,7 @@
     <Properties>
         <Property name="LogDir">${log.dir}</Property>
         <Property name="LogRootLevel">${log.root.level}</Property>
-        <Property name="LogNameSql">java.sql</Property>
+        <Property name="LogNameSql">SQL_LOG</Property>
     </Properties>
     <Appenders>
         <!-- 输出控制台 -->

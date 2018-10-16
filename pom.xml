@@ -512,7 +512,7 @@
             </activation>
             <properties>
                 <log.dir>/var/log/worker</log.dir>
-                <log.root.level>INFO</log.root.level>
+                <log.root.level>info</log.root.level>
 
                 <zip.demon.test>This is a development test property</zip.demon.test>
                 <!-- Add your development property here -->
