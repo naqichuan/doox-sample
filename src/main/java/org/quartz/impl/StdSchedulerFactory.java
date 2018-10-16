@@ -830,6 +830,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
         }
 
         try {
+            // TODO 实例化 ThreadPool，如果没有配置指定 ThreadPool，默认认使用 SimpleThreadPool
             threadPool = (ThreadPool) loadHelper.loadClass(tpClass).newInstance();
         } catch (Exception e) {
             initException = new SchedulerException("ThreadPool class '"

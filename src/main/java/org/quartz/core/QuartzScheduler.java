@@ -120,6 +120,7 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
 
     private QuartzSchedulerResources resources;
 
+    // 调度线程
     private QuartzSchedulerThread schedThread;
 
     private ThreadGroup threadGroup;
@@ -192,6 +193,7 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
             addInternalJobListener((JobListener) resources.getJobStore());
         }
 
+        // TODO 实例化 QuartzSchedulerThread，并启动线程
         this.schedThread = new QuartzSchedulerThread(this, resources);
         ThreadExecutor schedThreadExecutor = resources.getThreadExecutor();
         schedThreadExecutor.execute(this.schedThread);
@@ -205,7 +207,7 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
         errLogger = new ErrorLogger();
         addInternalSchedulerListener(errLogger);
 
-        // 信号
+        // 信号 TODO 线程加入 SchedulerSignaler
         signaler = new SchedulerSignalerImpl(this, this.schedThread);
 
         if (shouldRunUpdateCheck())
@@ -859,9 +861,13 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
                     "Based on configured schedule, the given trigger '" + trigger.getKey() + "' will never fire.");
         }
 
+        // TODO 保存 job 和 trigger
         resources.getJobStore().storeJobAndTrigger(jobDetail, trig);
+        // 添加 job 通知
         notifySchedulerListenersJobAdded(jobDetail);
+        // 通知线程 signalOnSchedulingChange
         notifySchedulerThread(trigger.getNextFireTime().getTime());
+        // job 计划通知
         notifySchedulerListenersSchduled(trigger);
 
         return ft;
@@ -1773,6 +1779,7 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
 
     protected void notifySchedulerThread(long candidateNewNextFireTime) {
         if (isSignalOnSchedulingChange()) {
+            // signalOnSchedulingChange = true，总是执行 candidate 候选人
             signaler.signalSchedulingChange(candidateNewNextFireTime);
         }
     }
