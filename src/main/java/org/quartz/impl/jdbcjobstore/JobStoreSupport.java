@@ -669,6 +669,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
             }
         }
 
+        // TODO miss fire check
         misfireHandler = new MisfireHandler();
         if (initializersLoader != null)
             misfireHandler.setContextClassLoader(initializersLoader);
@@ -2720,13 +2721,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
             lockName = null;
         }
         return executeInNonManagedTXLock(lockName,
-//                conn -> acquireNextTrigger(conn, noLaterThan, maxCount, timeWindow)
-                new TransactionCallback<List<OperableTrigger>>() {
-                    public List<OperableTrigger> execute(Connection conn) throws JobPersistenceException {
-                        return acquireNextTrigger(conn, noLaterThan, maxCount, timeWindow);
-                    }
-                }
-                ,
+                conn -> acquireNextTrigger(conn, noLaterThan, maxCount, timeWindow),
                 (conn, result) -> {
                     try {
                         List<FiredTriggerRecord> acquired = getDelegate().selectInstancesFiredTriggerRecords(conn, getInstanceId());
@@ -2744,25 +2739,6 @@ public abstract class JobStoreSupport implements JobStore, Constants {
                         throw new JobPersistenceException("error validating trigger acquisition", e);
                     }
                 }
-//                new TransactionValidator<List<OperableTrigger>>() {
-//                    public Boolean validate(Connection conn, List<OperableTrigger> result) throws JobPersistenceException {
-//                        try {
-//                            List<FiredTriggerRecord> acquired = getDelegate().selectInstancesFiredTriggerRecords(conn, getInstanceId());
-//                            Set<String> fireInstanceIds = new HashSet<String>();
-//                            for (FiredTriggerRecord ft : acquired) {
-//                                fireInstanceIds.add(ft.getFireInstanceId());
-//                            }
-//                            for (OperableTrigger tr : result) {
-//                                if (fireInstanceIds.contains(tr.getFireInstanceId())) {
-//                                    return true;
-//                                }
-//                            }
-//                            return false;
-//                        } catch (SQLException e) {
-//                            throw new JobPersistenceException("error validating trigger acquisition", e);
-//                        }
-//                    }
-//                }
         );
     }
 
@@ -3884,29 +3860,25 @@ public abstract class JobStoreSupport implements JobStore, Constants {
         @Override
         public void run() {
             while (!shutdown) {
+                long timeToSleep = getClusterCheckinInterval();
+                long transpiredTime = (System.currentTimeMillis() - lastCheckin);
+                timeToSleep = timeToSleep - transpiredTime;
+                if (timeToSleep <= 0) {
+                    timeToSleep = 100L;
+                }
 
-                if (!shutdown) {
-                    long timeToSleep = getClusterCheckinInterval();
-                    long transpiredTime = (System.currentTimeMillis() - lastCheckin);
-                    timeToSleep = timeToSleep - transpiredTime;
-                    if (timeToSleep <= 0) {
-                        timeToSleep = 100L;
-                    }
+                if (numFails > 0) {
+                    timeToSleep = Math.max(getDbRetryInterval(), timeToSleep);
+                }
 
-                    if (numFails > 0) {
-                        timeToSleep = Math.max(getDbRetryInterval(), timeToSleep);
-                    }
-
-                    try {
-                        Thread.sleep(timeToSleep);
-                    } catch (Exception ignore) {
-                    }
+                try {
+                    Thread.sleep(timeToSleep);
+                } catch (Exception ignore) {
                 }
 
                 if (!shutdown && this.manage()) {
                     signalSchedulingChangeImmediately(0L);
                 }
-
             }//while !shutdown
         }
     }
