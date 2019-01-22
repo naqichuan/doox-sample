@@ -6,7 +6,6 @@
 
 package nqcx.tools.jdk8;
 
-import java.lang.reflect.Array;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Map;
@@ -14,7 +13,6 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
-import static sun.misc.Version.println;
 
 /**
  * Created by naqichuan 2018/1/24 14:30
