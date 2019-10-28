@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>nqcx.worker</groupId>
-    <artifactId>nqcx-tools</artifactId>
+    <artifactId>doox-sample</artifactId>
     <version>2.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>nqcx-tools</name>
+    <name>doox-sample</name>
     <url>http://tools.nqcx.org</url>
 
     <properties>
@@ -411,7 +411,7 @@
     </dependencies>
 
     <build>
-        <finalName>nqcx-tools</finalName>
+        <finalName>doox-sample</finalName>
         <resources>
             <resource>
                 <directory>src/main/config</directory>
