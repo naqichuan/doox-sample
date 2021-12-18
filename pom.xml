@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>3.2.6.RELEASE</spring.version>
         <slf4j.version>1.8.0-alpha2</slf4j.version>
-        <log4j.version>2.13.3</log4j.version>
+        <log4j.version>2.17.0</log4j.version>
         <quartz.version>2.2.1</quartz.version>
         <nqcx.commons.version>2.0.1-SNAPSHOT</nqcx.commons.version>
     </properties>
